@@ -22,12 +22,19 @@ public class Event implements Serializable {
 	 * @param interestTopics
 	 * @param description
 	 */
-	public Event(String name, List<String> interestTopics, String description) {
+	public Event(String name, List<String> topics, String description) {
 		this.name = name;
-		this.topics = interestTopics;
+		this.topics = topics;
 		this.description = description;
 	}
 
+	/**
+	 * @return true if successful
+	 */
+	public boolean addTopics(String topic) {
+		return topics.add(topic);
+	}
+	
 	/**
 	 * @return the name
 	 */
@@ -76,7 +83,7 @@ public class Event implements Serializable {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = 1 * ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
