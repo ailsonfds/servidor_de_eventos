@@ -43,30 +43,49 @@ public class User implements Serializable{
 	public String getName() {
 		return name;
 	}
+	
 	/**
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	/**
 	 * @return the userName
 	 */
 	public String getUserName() {
 		return userName;
 	}
+	
 	/**
 	 * @param userName the userName to set
 	 */
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
+	
+	/**
+	 * @return true if successful
+	 */
+	public boolean addInterestTopic(String topic) {
+		return interestTopics.add(topic);
+	}
+	
+	/**
+	 * @return true if successful
+	 */
+	public boolean addInterestTopic(List<String> topics) {
+		return interestTopics.addAll(topics);
+	}
+
 	/**
 	 * @return the interestTopics
 	 */
 	public List<String> getInterestTopics() {
 		return interestTopics;
 	}
+
 	/**
 	 * @param interestTopics the interestTopics to set
 	 */
@@ -80,10 +99,11 @@ public class User implements Serializable{
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		int result = 1 * ((userName == null) ? 0 : userName.hashCode());
+		result = prime * result + ((userName == null) ? 0 : userName.hashCode());
 		return result;
 	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -99,9 +119,9 @@ public class User implements Serializable{
 		if (userName == null) {
 			if (other.userName != null)
 				return false;
-		} else if (!name.equals(other.userName))
+		} else if (!userName.equals(other.userName))
 			return false;
 		return true;
 	}
-	
+
 }
