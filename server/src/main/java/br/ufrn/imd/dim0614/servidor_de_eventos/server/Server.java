@@ -134,7 +134,6 @@ public class Server extends UnicastRemoteObject implements br.ufrn.imd.dim0614.s
 		Option ip = new Option("i", "ip", true, "Serve ip address");
 		ip.setType(String.class);
 		ip.setRequired(false);
-		ip.setArgs(1);
 		options.addOption(ip);
 
 		return options;
