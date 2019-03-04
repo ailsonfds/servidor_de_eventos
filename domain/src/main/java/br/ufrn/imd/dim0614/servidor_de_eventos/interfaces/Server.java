@@ -15,13 +15,62 @@ import br.ufrn.imd.dim0614.servidor_de_eventos.classes.Event;
  */
 public interface Server extends Remote {
 
+	/**
+	 * @param event
+	 * @return a reference to the event created
+	 * @throws RemoteException
+	 */
 	public Event createEvent(Event event) throws RemoteException;
+	
+	/**
+	 * @param name
+	 * @param topics
+	 * @param description
+	 * @return a reference to the event created
+	 * @throws RemoteException
+	 */
 	public Event createEvent(String name, List<String> topics, String description) throws RemoteException;
+	
+	/**
+	 * @param event
+	 * @return true if successful
+	 * @throws RemoteException
+	 */
 	public boolean publishEvent(Event event) throws RemoteException;
+	
+	/**
+	 * @param eventName
+	 * @return true if successful
+	 * @throws RemoteException
+	 */
 	public boolean publishEvent(String eventName) throws RemoteException;
+	
+	/**
+	 * @param topic
+	 * @return list with events related to the topic parameter
+	 * @throws RemoteException
+	 */
 	public List<Event> groupEvent(String topic) throws RemoteException;
-	public List<Event> groupEvent(List<String> topic) throws RemoteException;
+	
+	/**
+	 * @param topic
+	 * @return list with events related to the topics parameter
+	 * @throws RemoteException
+	 */
+	public List<Event> groupEvent(List<String> topics) throws RemoteException;
+	
+	/**
+	 * @param userName
+	 * @param topic
+	 * @return true if successful
+	 * @throws RemoteException
+	 */
 	public boolean addInterestTopic(String userName, String topic) throws RemoteException;
+	
+	/**
+	 * @return true if successful
+	 * @throws RemoteException
+	 */
 	public boolean notifyEvent() throws RemoteException;
 
 }
