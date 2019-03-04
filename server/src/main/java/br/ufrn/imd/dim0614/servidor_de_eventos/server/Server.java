@@ -129,6 +129,9 @@ public class Server extends UnicastRemoteObject implements br.ufrn.imd.dim0614.s
 		}
 	}
 
+	/**
+	 * @return org.apache.commons.cli.Options object with all required CLI options
+	 */
 	private static final Options generateArgsOpts() {
 		Options options = new Options();
 		Option ip = new Option("i", "ip", true, "Serve ip address");
