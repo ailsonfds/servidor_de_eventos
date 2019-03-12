@@ -4,6 +4,7 @@
 package br.ufrn.imd.dim0614.servidor_de_eventos.classes;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class User implements Serializable{
 	private String userName;
 	private List<String> interestTopics;
 	private Boolean logged;
-	private HashMap<Event, Boolean> notifications;
+	private HashMap<Boolean, List<Event>> notifications;
 
 	/**
 	 * @param name
@@ -30,6 +31,10 @@ public class User implements Serializable{
 		this.userName = userName;
 		this.interestTopics = interestTopics;
 		this.logged = false;
+		this.notifications = new HashMap<Boolean, List<Event>>();
+		
+		this.notifications.put(true, new ArrayList<Event>());
+		this.notifications.put(false, new ArrayList<Event>());
 	}
 
 	public void login() {
@@ -42,6 +47,10 @@ public class User implements Serializable{
 	
 	public boolean isLogged() {
 		return this.logged;
+	}
+	
+	public void addNotification(Event event) {
+		this.notifications.get(false).add(event);
 	}
 	
 	/**
@@ -109,11 +118,11 @@ public class User implements Serializable{
 		this.interestTopics = interestTopics;
 	}
 
-	public HashMap<Event, Boolean> getNotifications() {
+	public HashMap<Boolean, List<Event>> getNotifications() {
 		return notifications;
 	}
 
-	public void setNotifications(HashMap<Event, Boolean> notifications) {
+	public void setNotifications(HashMap<Boolean, List<Event>> notifications) {
 		this.notifications = notifications;
 	}
 
