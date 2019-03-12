@@ -19,6 +19,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import br.ufrn.imd.dim0614.servidor_de_eventos.classes.Event;
+import br.ufrn.imd.dim0614.servidor_de_eventos.classes.User;
+import br.ufrn.imd.dim0614.servidor_de_eventos.database.ServerDatabase;
 
 /**
  * @author Ailson Forte dos Santos
@@ -27,10 +29,12 @@ import br.ufrn.imd.dim0614.servidor_de_eventos.classes.Event;
 public class Server extends UnicastRemoteObject implements br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server {
 
 	private static final long serialVersionUID = 1L;
+	
+	private ServerDatabase database;
 
 	protected Server() throws RemoteException {
 		super();
-		// TODO Auto-generated constructor stub
+		this.database = new ServerDatabase();
 	}
 
 	/* (non-Javadoc)
@@ -53,8 +57,7 @@ public class Server extends UnicastRemoteObject implements br.ufrn.imd.dim0614.s
 	 * @see br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#publishEvent(br.ufrn.imd.dim0614.servidor_de_eventos.classes.Event)
 	 */
 	public boolean publishEvent(Event event) throws RemoteException {
-		// TODO Auto-generated method stub
-		return false;
+		return this.database.add(event);
 	}
 
 	/* (non-Javadoc)
@@ -85,7 +88,10 @@ public class Server extends UnicastRemoteObject implements br.ufrn.imd.dim0614.s
 	 * @see br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#addInterestTopic(java.lang.String, java.lang.String)
 	 */
 	public boolean addInterestTopic(String userName, String topic) throws RemoteException {
-		// TODO Auto-generated method stub
+		for(User user : this.database.getUsers())
+			if(user.getUserName().equals(userName)) {
+				user.addInterestTopic(topic);
+			}
 		return false;
 	}
 
@@ -111,9 +117,7 @@ public class Server extends UnicastRemoteObject implements br.ufrn.imd.dim0614.s
 			String ipAddress = cmd.getOptionValue("ip");
 			
 			ipAddress = (ipAddress.isEmpty()?"localhost":ipAddress);
-
-			System.out.println(ipAddress);
-
+			
 			System.setProperty("java.rmi.server.hostname", "localhost");
 			LocateRegistry.createRegistry(1900);
 			Naming.rebind("rmi://" + ipAddress + ":1900/EventServer", new Server());

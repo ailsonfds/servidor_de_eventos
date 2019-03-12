@@ -7,7 +7,9 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -83,10 +85,15 @@ public class Client implements br.ufrn.imd.dim0614.servidor_de_eventos.interface
 			String ipAddress = cmd.getOptionValue("ip");
 			
 			ipAddress = (ipAddress.isEmpty()?"localhost":ipAddress);
-
-			System.out.println(ipAddress);
 			
 			server = (Server) Naming.lookup("rmi://" + ipAddress + ":1900/EventServer");
+			
+			Scanner scanner = new Scanner(System.in);
+			String name = scanner.nextLine();
+			List<String> topics = Arrays.asList(scanner.nextLine().split(" "));
+			String description = scanner.nextLine();
+			Event event = new Event(name, topics, description);
+			System.out.println(server.publishEvent(event));
 			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
