@@ -92,7 +92,7 @@ public class Client implements br.ufrn.imd.dim0614.servidor_de_eventos.interface
 			Scanner scanner = new Scanner(System.in);
 			System.out.println("Insert your user name: ");
 			final String userName = scanner.nextLine();
-			
+
 			final User user;
 			if(server.lookup(userName) == null) {
 				System.out.println("Hello! It's your first time here...");
@@ -106,27 +106,25 @@ public class Client implements br.ufrn.imd.dim0614.servidor_de_eventos.interface
 				System.out.println("Welcome back, " + userName);
 			}
 
+			Thread thread;
+
 			if(server.loginUser(userName)) {
-				
-				Thread thread = new Thread(new Runnable() {
+
+				thread = new Thread(new Runnable() {
 					
 					public void run() {
-						
-						Integer notifications = 0;
-						try {
-							notifications = server.userHasNotifications(userName);
-						} catch (RemoteException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						
-						while(user.isLogged()) {
+
+						int oldValueNotifications = 0;
+
+						while(true) {
 							try {
-								Integer temp = server.userHasNotifications(userName);
-								if(notifications != temp) {
-									notifications = temp;
-									System.out.println("You have " + notifications + " new notifications");
+								int temp = server.userHasNotifications(userName);
+								if(temp != oldValueNotifications) {
+									if(temp > 0)
+										System.out.println("You have " + temp + " new notifications");
+									oldValueNotifications = temp;		
 								}
+
 								Thread.sleep(1000);
 							} catch (RemoteException e) {
 								e.printStackTrace();
@@ -137,15 +135,17 @@ public class Client implements br.ufrn.imd.dim0614.servidor_de_eventos.interface
 					}
 				});
 				thread.start();
-				
-				System.out.println("== EVENT SERVER ==");
+
 				Integer option = -1;
 
 				while (option != 0) {
+					System.out.println("\n\n== EVENT SERVER ==");
 					System.out.println("1 - Create event");
 					System.out.println("2 - Add new interest topics");
 					System.out.println("3 - See unread notifications");
 					System.out.println("4 - See readed notifications");
+					System.out.println("5 - See your interest topics");
+					System.out.println("6 - See all events");
 					System.out.println("0 - Exit");
 					option = scanner.nextInt();
 					scanner.nextLine();
@@ -168,6 +168,10 @@ public class Client implements br.ufrn.imd.dim0614.servidor_de_eventos.interface
 					} else if(option == 4) {
 						List<Event> readed = server.readedNotifications(userName);
 						for(Event event : readed) System.out.println(event);
+					} else if(option == 5) {
+						System.out.println(server.lookup(userName).getInterestTopics());
+					} else if(option == 6) {
+						System.out.println(server.listEvents());
 					}
 				}
 			} else {
@@ -175,6 +179,7 @@ public class Client implements br.ufrn.imd.dim0614.servidor_de_eventos.interface
 			}
 			
 			server.logoutUser(userName);
+
 
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -214,5 +219,4 @@ public class Client implements br.ufrn.imd.dim0614.servidor_de_eventos.interface
 
 		return options;
 	}
-
 }

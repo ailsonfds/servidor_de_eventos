@@ -82,7 +82,9 @@ public class Server extends UnicastRemoteObject implements br.ufrn.imd.dim0614.s
 	}
 
 	public String listEvents() throws RemoteException {
-		return database.getEvents().toString();
+		String toReturn = "";
+		for(Event event : database.getEvents()) toReturn += event.toString() + "\n";
+		return toReturn;
 	}
 
 	/*
