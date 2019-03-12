@@ -85,7 +85,11 @@ public class Client implements br.ufrn.imd.dim0614.servidor_de_eventos.interface
 			cmd = parser.parse(options, args);
 			String ipAddress = cmd.getOptionValue("ip");
 
-			ipAddress = (ipAddress.isEmpty()?"localhost":ipAddress);
+			try {
+				ipAddress = (ipAddress.isEmpty()?"localhost":ipAddress);
+			} catch(NullPointerException e) {
+				ipAddress = "localhost";
+			}
 
 			server = (Server) Naming.lookup("rmi://" + ipAddress + ":1900/EventServer");
 
