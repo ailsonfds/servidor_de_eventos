@@ -1,6 +1,7 @@
 package br.ufrn.imd.dim0614.servidor_de_eventos.database;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import br.ufrn.imd.dim0614.servidor_de_eventos.classes.Event;
@@ -13,11 +14,11 @@ import br.ufrn.imd.dim0614.servidor_de_eventos.classes.User;
 public class ServerDatabase {
 	
 	private List<Event> events;
-	private List<User> users;
+	private HashMap<String, User> users;
 	
 	public ServerDatabase() {
 		this.events = new ArrayList<Event>();
-		this.users = new ArrayList<User>();
+		this.users = new HashMap();
 	}
 
 	/**
@@ -44,9 +45,15 @@ public class ServerDatabase {
 	 * @param user to add.
 	 * @return if was added.
 	 */
-	public boolean add(User user) {
+	public boolean add(String userName, User user) {
 		synchronized (users) {
-			return this.users.add(user);
+			if(this.users.containsKey(userName))
+				return false;
+			else {
+				this.users.put(userName, user);
+				return true;
+			}
+			
 		}
 	}
 	
@@ -54,9 +61,13 @@ public class ServerDatabase {
 	 * @param user to remove.
 	 * @return if was removed.
 	 */
-	public boolean remove(User user) {
+	public boolean remove(String userName) {
 		synchronized (users) {
-			return this.users.remove(user);
+			if(this.users.containsKey(userName)) {
+				this.users.remove(userName);
+				return true;
+			}
+			return false;
 		}
 	}
 	
@@ -77,14 +88,14 @@ public class ServerDatabase {
 	/**
 	 * @return the users.
 	 */
-	public List<User> getUsers() {
+	public HashMap<String, User> getUsers() {
 		return users;
 	}
 
 	/**
 	 * @param users users to set.
 	 */
-	public void setUsers(List<User> users) {
+	public void setUsers(HashMap<String, User> users) {
 		this.users = users;
 	}
 }

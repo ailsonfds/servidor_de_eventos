@@ -89,11 +89,44 @@ public class Client implements br.ufrn.imd.dim0614.servidor_de_eventos.interface
 			server = (Server) Naming.lookup("rmi://" + ipAddress + ":1900/EventServer");
 			
 			Scanner scanner = new Scanner(System.in);
-			String name = scanner.nextLine();
-			List<String> topics = Arrays.asList(scanner.nextLine().split(" "));
-			String description = scanner.nextLine();
-			Event event = new Event(name, topics, description);
-			System.out.println(server.publishEvent(event));
+			System.out.println("Insert your user name: ");
+			String userName = scanner.nextLine();
+			User user = server.lookup(userName);
+			if(user == null) {
+				System.out.println("Hello! It's your first time here...");
+				System.out.println("What's your name?");
+				String name = scanner.nextLine();
+				System.out.println("What's your interest topics? (write them separated by a single space)");
+				List<String> interests = Arrays.asList(scanner.nextLine().split(" "));
+				user = new User(name, userName, interests);
+				server.newUser(user);
+			} else {
+				System.out.println("Welcome back, " + userName);
+			}
+			
+			server.loginUser(userName);
+			System.out.println("== EVENT SERVER ==");
+			Integer option = 0;
+			
+			while (option != 4) {
+				System.out.println("1 - Create event");
+				System.out.println("4 - Exit");
+				option = scanner.nextInt();
+				scanner.nextLine();
+				if(option == 1) {
+					System.out.println("Name: ");
+					String name = scanner.nextLine();
+					System.out.println("Topics: ");
+					List<String> topics = Arrays.asList(scanner.nextLine().split(" "));
+					System.out.println("Description: ");
+					String description = scanner.nextLine();
+					
+					Event event = new Event(name, topics, description);
+					System.out.println(event.toString());
+					server.publishEvent(event);
+					System.out.println(server.listEvents());
+				}
+			}
 			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();

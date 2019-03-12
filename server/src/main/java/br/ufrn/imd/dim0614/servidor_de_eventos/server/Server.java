@@ -29,7 +29,7 @@ import br.ufrn.imd.dim0614.servidor_de_eventos.database.ServerDatabase;
 public class Server extends UnicastRemoteObject implements br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private ServerDatabase database;
 
 	protected Server() throws RemoteException {
@@ -37,65 +37,127 @@ public class Server extends UnicastRemoteObject implements br.ufrn.imd.dim0614.s
 		this.database = new ServerDatabase();
 	}
 
-	/* (non-Javadoc)
-	 * @see br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#createEvent(br.ufrn.imd.dim0614.servidor_de_eventos.classes.Event)
+	public boolean newUser(User user) throws RemoteException {
+		return this.database.add(user.getUserName(), user);
+	}
+	
+	public boolean loginUser(String userName) throws RemoteException {
+		if(this.database.getUsers().get(userName).isLogged())
+			return false;
+		this.database.getUsers().get(userName).login();
+		return true;
+	}
+	
+	public boolean logoutUser(String userName) throws RemoteException {
+		if(this.database.getUsers().get(userName).isLogged()) {
+			this.database.getUsers().get(userName).logout();
+			return true;
+		}
+		return false;
+	}
+	
+	public User lookup(String userName) throws RemoteException {
+		if(this.database.getUsers().containsKey(userName))
+			return this.database.getUsers().get(userName);
+		return null;
+	}
+
+	public String listEvents() throws RemoteException {
+		return database.getEvents().toString();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#createEvent(br.ufrn
+	 * .imd.dim0614.servidor_de_eventos.classes.Event)
 	 */
 	public Event createEvent(Event event) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#createEvent(java.lang.String, java.util.List, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#createEvent(java.
+	 * lang.String, java.util.List, java.lang.String)
 	 */
 	public Event createEvent(String name, List<String> topics, String description) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#publishEvent(br.ufrn.imd.dim0614.servidor_de_eventos.classes.Event)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#publishEvent(br.
+	 * ufrn.imd.dim0614.servidor_de_eventos.classes.Event)
 	 */
 	public boolean publishEvent(Event event) throws RemoteException {
+		this.database.getUsers().forEach(user -> {
+			
+		});
 		return this.database.add(event);
 	}
 
-	/* (non-Javadoc)
-	 * @see br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#publishEvent(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#publishEvent(java.
+	 * lang.String)
 	 */
 	public boolean publishEvent(String eventName) throws RemoteException {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#groupEvent(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#groupEvent(java.
+	 * lang.String)
 	 */
 	public List<Event> groupEvent(String topic) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#groupEvent(java.util.List)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#groupEvent(java.
+	 * util.List)
 	 */
 	public List<Event> groupEvent(List<String> topics) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#addInterestTopic(java.lang.String, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#addInterestTopic(
+	 * java.lang.String, java.lang.String)
 	 */
 	public boolean addInterestTopic(String userName, String topic) throws RemoteException {
-		for(User user : this.database.getUsers())
-			if(user.getUserName().equals(userName)) {
-				user.addInterestTopic(topic);
-			}
+		if (database.getUsers().containsKey(userName)) {
+			database.getUsers().get(userName).addInterestTopic(topic);
+			return true;
+		}
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.Server#notifyEvent()
 	 */
 	public boolean notifyEvent() throws RemoteException {
@@ -115,13 +177,13 @@ public class Server extends UnicastRemoteObject implements br.ufrn.imd.dim0614.s
 		try {
 			cmd = parser.parse(options, args);
 			String ipAddress = cmd.getOptionValue("ip");
-			
-			ipAddress = (ipAddress.isEmpty()?"localhost":ipAddress);
-			
+
+			ipAddress = (ipAddress.isEmpty() ? "localhost" : ipAddress);
+
 			System.setProperty("java.rmi.server.hostname", "localhost");
 			LocateRegistry.createRegistry(1900);
 			Naming.rebind("rmi://" + ipAddress + ":1900/EventServer", new Server());
-			
+
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (RemoteException e) {

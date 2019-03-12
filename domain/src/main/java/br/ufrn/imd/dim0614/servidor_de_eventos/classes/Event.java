@@ -12,7 +12,8 @@ import java.util.List;
  */
 public class Event implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -5385942054644559040L;
+	//	private static final long serialVersionUID = 1L;
 	private String name;
 	private List<String> topics;
 	private String description;
@@ -107,5 +108,7 @@ public class Event implements Serializable {
 			return false;
 		return true;
 	}
+	
+	
 
 }

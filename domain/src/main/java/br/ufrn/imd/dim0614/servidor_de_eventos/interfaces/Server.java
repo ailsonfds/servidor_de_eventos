@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import br.ufrn.imd.dim0614.servidor_de_eventos.classes.Event;
+import br.ufrn.imd.dim0614.servidor_de_eventos.classes.User;
 
 /**
  * @author Ailson Forte dos Santos
@@ -15,6 +16,40 @@ import br.ufrn.imd.dim0614.servidor_de_eventos.classes.Event;
  */
 public interface Server extends Remote {
 
+	/**
+	 * @param user
+	 * @return
+	 * @throws RemoteException
+	 */
+	public boolean newUser(User user) throws RemoteException;
+	
+	/**
+	 * @param userName
+	 * @return
+	 * @throws RemoteException
+	 */
+	public boolean loginUser(String userName) throws RemoteException;
+	
+	/**
+	 * @param userName
+	 * @return
+	 * @throws RemoteException
+	 */
+	public boolean logoutUser(String userName) throws RemoteException;
+	
+	/**
+	 * @return the events
+	 * @throws RemoteException
+	 */
+	public String listEvents() throws RemoteException;
+	
+	/**
+	 * @param userName
+	 * @return the user
+	 * @throws RemoteException
+	 */
+	public User lookup(String userName) throws RemoteException;
+	
 	/**
 	 * @param event
 	 * @return a reference to the event created
