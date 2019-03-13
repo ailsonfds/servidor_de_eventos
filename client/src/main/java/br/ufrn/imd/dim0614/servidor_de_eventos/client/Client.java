@@ -113,13 +113,9 @@ public class Client implements br.ufrn.imd.dim0614.servidor_de_eventos.interface
 			Thread thread;
 
 			if(server.loginUser(userName)) {
-
 				thread = new Thread(new Runnable() {
-					
 					public void run() {
-
 						int oldValueNotifications = 0;
-
 						while(true) {
 							try {
 								int temp = server.userHasNotifications(userName);
@@ -128,7 +124,6 @@ public class Client implements br.ufrn.imd.dim0614.servidor_de_eventos.interface
 										System.out.println("You have " + temp + " new notifications");
 									oldValueNotifications = temp;		
 								}
-
 								Thread.sleep(1000);
 							} catch (RemoteException e) {
 								e.printStackTrace();
