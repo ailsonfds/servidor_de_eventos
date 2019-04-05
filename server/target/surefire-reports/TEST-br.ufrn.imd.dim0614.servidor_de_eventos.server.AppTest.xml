@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="1" failures="0" name="br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.AppTest" time="0.002" errors="0" skipped="0">
+<testsuite tests="1" failures="0" name="br.ufrn.imd.dim0614.servidor_de_eventos.server.AppTest" time="0.001" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="java.vm.version" value="10.0.2+13-Ubuntu-1ubuntu0.18.04.4"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-11-openjdk-amd64/lib"/>
     <property name="user.country.format" value="BR"/>
-    <property name="maven.multiModuleProjectDirectory" value="/home/jarvis/disciplinas/prog_dist/servidor_de_eventos/domain"/>
+    <property name="maven.multiModuleProjectDirectory" value="/home/jarvis/disciplinas/prog_dist/servidor_de_eventos/server"/>
     <property name="java.vm.vendor" value="Oracle Corporation"/>
     <property name="java.vendor.url" value="http://java.oracle.com/"/>
     <property name="guice.disable.misplaced.annotation.check" value="true"/>
@@ -16,7 +16,7 @@
     <property name="user.country" value="US"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="user.dir" value="/home/jarvis/disciplinas/prog_dist/servidor_de_eventos/domain"/>
+    <property name="user.dir" value="/home/jarvis/disciplinas/prog_dist/servidor_de_eventos/server"/>
     <property name="java.vm.compressedOopsMode" value="32-bit"/>
     <property name="java.runtime.version" value="10.0.2+13-Ubuntu-1ubuntu0.18.04.4"/>
     <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"/>
@@ -26,7 +26,7 @@
 "/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="os.name" value="Linux"/>
-    <property name="classworlds.conf" value="/home/jarvis/eclipse-workspace/.metadata/.plugins/org.eclipse.m2e.launching/launches/m2conf4135882162156232784.tmp"/>
+    <property name="classworlds.conf" value="/home/jarvis/eclipse-workspace/.metadata/.plugins/org.eclipse.m2e.launching/launches/m2conf1391215653512371362.tmp"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
     <property name="java.library.path" value="/usr/java/packages/lib:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib"/>
     <property name="jdk.debug" value="release"/>
@@ -53,7 +53,7 @@
     <property name="java.version" value="10.0.2"/>
     <property name="securerandom.source" value="file:/dev/./urandom"/>
     <property name="java.vendor" value="Oracle Corporation"/>
-    <property name="maven.home" value="/home/jarvis/disciplinas/prog_dist/servidor_de_eventos/domain/EMBEDDED"/>
+    <property name="maven.home" value="/home/jarvis/disciplinas/prog_dist/servidor_de_eventos/server/EMBEDDED"/>
     <property name="file.separator" value="/"/>
     <property name="java.version.date" value="2018-07-17"/>
     <property name="java.vendor.url.bug" value="http://bugreport.java.com/bugreport/"/>
@@ -62,5 +62,5 @@
     <property name="sun.desktop" value="gnome"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase classname="br.ufrn.imd.dim0614.servidor_de_eventos.interfaces.AppTest" name="testApp" time="0.002"/>
+  <testcase classname="br.ufrn.imd.dim0614.servidor_de_eventos.server.AppTest" name="testApp" time="0.001"/>
 </testsuite>

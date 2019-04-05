@@ -12,11 +12,24 @@ import java.util.List;
  * @author Ailson Forte dos Santos
  *
  */
+/**
+ * @author jarvis
+ *
+ */
+/**
+ * @author jarvis
+ *
+ */
+/**
+ * @author jarvis
+ *
+ */
 public class User implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	private String name;
 	private String userName;
+	private String password;
 	private List<String> interestTopics;
 	private Boolean logged;
 	private HashMap<Boolean, List<Event>> notifications;
@@ -25,11 +38,31 @@ public class User implements Serializable{
 	 * @param name
 	 * @param userName
 	 * @param interestTopics
+	 * @param password
 	 */
 	public User(String name, String userName, List<String> interestTopics) {
 		this.name = name;
 		this.userName = userName;
 		this.interestTopics = interestTopics;
+		this.password = null;
+		this.logged = false;
+		this.notifications = new HashMap<Boolean, List<Event>>();
+		
+		this.notifications.put(true, new ArrayList<Event>());
+		this.notifications.put(false, new ArrayList<Event>());
+	}
+	
+	/**
+	 * @param name
+	 * @param userName
+	 * @param interestTopics
+	 * @param password
+	 */
+	public User(String name, String userName, List<String> interestTopics, String password) {
+		this.name = name;
+		this.userName = userName;
+		this.interestTopics = interestTopics;
+		this.password = password;
 		this.logged = false;
 		this.notifications = new HashMap<Boolean, List<Event>>();
 		
@@ -39,6 +72,17 @@ public class User implements Serializable{
 
 	public void login() {
 		this.logged = true;
+	}
+
+	/**
+	 * @param password
+	 * @return true if login is successful
+	 */
+	public boolean login(String password) {
+		if(password.equals(this.password)) {
+			this.logged = true;
+		}
+		return this.logged;
 	}
 	
 	public void logout() {
@@ -156,5 +200,6 @@ public class User implements Serializable{
 			return false;
 		return true;
 	}
+
 
 }

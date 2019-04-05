@@ -4,11 +4,14 @@
 package br.ufrn.imd.dim0614.servidor_de_eventos.server;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -30,71 +33,108 @@ import br.ufrn.imd.dim0614.servidor_de_eventos.database.ServerDatabase;
  *
  */
 @Path("/live_server")
-public class ServerRESTful {
+public class ServerRESTful extends Application {
 
+	private Set<Object> singletons = new HashSet<Object>();
+	private Set<Class<?>> empty = new HashSet<Class<?>>();
 	private ServerDatabase database;
 
 	protected ServerRESTful() {
 		this.database = new ServerDatabase();
 	}
 
+	@Override
+	public Set<Class<?>> getClasses() {
+		return empty;
+	}
+
+	@Override
+	public Set<Object> getSingletons() {
+		return singletons;
+	}
+	
 	@GET
 	@Path("/{user_id}/notifications")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Integer userHasNotifications(@PathParam("user_id") String userName) {
-		return this.database.getUsers().get(userName).getNotifications().get(false).size();
+	public JsonObject userHasNotifications(@PathParam("user_id") String userName) {
+		JsonObject result = new JsonObject();
+		result.addProperty("notificationsAmount", this.database.getUsers().get(userName).getNotifications().get(false).size());
+		return result;
 	}
-	
+
 	@POST
 	@Path("/{user_id}/notifications/new")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Event> unreadNotifications(@PathParam("user_id") String userName) {
+	public JsonArray unreadNotifications(@PathParam("user_id") String userName) {
+		JsonArray unreadReturn = new JsonArray();
 		List<Event> unread = new ArrayList<>(this.database.getUsers().get(userName).getNotifications().get(false));
+		for(Event event: unread) {
+			JsonObject el = new JsonObject();
+			el.addProperty("name", event.getName());
+			el.addProperty("description", event.getDescription());
+			JsonArray topics = new JsonArray();
+			for(String topic : event.getTopics()) topics.add(topic);
+			el.add("topics", topics);
+			unreadReturn.add(el);
+		}
 		this.database.getUsers().get(userName).getNotifications().get(true).addAll(unread);
 		this.database.getUsers().get(userName).getNotifications().get(false).clear();
-		return unread;
+		return unreadReturn;
 	}
-	
+
 	@GET
 	@Path("/{user_id}/notifications/old")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Event> readedNotifications(String userName) {
-		List<Event> readed = this.database.getUsers().get(userName).getNotifications().get(true);
+	public JsonArray readedNotifications(@PathParam("user_id") String userName) {
+		JsonArray readed = new JsonArray();
+		for(Event event: this.database.getUsers().get(userName).getNotifications().get(true)) {
+			JsonObject el = new JsonObject();
+			el.addProperty("name", event.getName());
+			el.addProperty("description", event.getDescription());
+			JsonArray topics = new JsonArray();
+			for(String topic : event.getTopics()) topics.add(topic);
+			el.add("topics", topics);
+			readed.add(el);
+		}
 		return readed;
 	}
-	
+
 	@POST
 	@Path("/signin")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response newUser() {
-		User user = new User("","");
+	public Response newUser(JsonObject payload) {
+		User user = new GsonBuilder().create().fromJson(payload, User.class);
 		if(this.database.add(user.getUserName(), user))
 			return Response.ok().build();
 		return Response.serverError().build();
 	}
-	
+
 	@POST
 	@Path("/login")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response loginUser() {
-		String userName = new String();
+	public Response loginUser(JsonObject payload) {
+		String userName = payload.get("userName").getAsString();
+		String password = payload.get("password").getAsString();
 		if(this.database.getUsers().get(userName).isLogged())
 			return Response.serverError().build();
-		this.database.getUsers().get(userName).login();
-		return Response.ok().build();
+		if(this.database.getUsers().get(userName).login(password)) {
+			return Response.ok().build();
+		}
+		return Response.serverError().build();
 	}
-	
+
 	@POST
 	@Path("/logout")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response logoutUser(String userName) {
+	public Response logoutUser(JsonObject payload) {
+		String userName = payload.get("userName").getAsString();
 		if(this.database.getUsers().get(userName).isLogged()) {
 			this.database.getUsers().get(userName).logout();
 			return Response.ok().build();
 		}
 		return Response.serverError().build();
 	}
-	
+
 	public User lookup(String userName) {
 		if(this.database.getUsers().containsKey(userName))
 			return this.database.getUsers().get(userName);
@@ -117,7 +157,7 @@ public class ServerRESTful {
 		}
 		return toReturn;
 	}
-	
+
 	@GET
 	@Path("/str")
 	@Produces(MediaType.TEXT_PLAIN)
@@ -138,21 +178,21 @@ public class ServerRESTful {
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response publishEvent(JsonObject payload) {
-//		String name = payload.getString("name");
-//		String description = payload.getString("description");
-//		List<String> topics = payload.getJsonArray("topics").getValuesAs(String.class);
+		//		String name = payload.getString("name");
+		//		String description = payload.getString("description");
+		//		List<String> topics = payload.getJsonArray("topics").getValuesAs(String.class);
 		Event event = new GsonBuilder().create().fromJson(payload, Event.class);
 		this.database.getUsers().entrySet().forEach(item -> {
 			for(String topic : event.getTopics())
 				if(item.getValue().getInterestTopics().contains(topic))
 					item.getValue().addNotification(event);
 		});
-		
+
 		if(this.database.add(event))
 			return Response.ok().build();
 		return Response.serverError().build();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -169,13 +209,12 @@ public class ServerRESTful {
 		}
 		return Response.serverError().build();
 	}
-	
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		ServerRESTful server = new ServerRESTful();
 	}
 
 }
