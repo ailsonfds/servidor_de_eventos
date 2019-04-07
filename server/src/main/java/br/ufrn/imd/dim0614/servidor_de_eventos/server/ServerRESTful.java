@@ -11,7 +11,6 @@ import java.util.Set;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -32,26 +31,29 @@ import br.ufrn.imd.dim0614.servidor_de_eventos.database.ServerDatabase;
  * @author Ailson F. dos Santos
  *
  */
-@Path("/live_server")
-public class ServerRESTful extends Application {
+@Path("live_server")
+public class ServerRESTful {
 
 	private Set<Object> singletons = new HashSet<Object>();
 	private Set<Class<?>> empty = new HashSet<Class<?>>();
 	private ServerDatabase database;
-
-	protected ServerRESTful() {
+        
+	public ServerRESTful() {
 		this.database = new ServerDatabase();
 	}
 
-	@Override
 	public Set<Class<?>> getClasses() {
 		return empty;
 	}
 
-	@Override
 	public Set<Object> getSingletons() {
 		return singletons;
 	}
+        
+        @GET
+        public String test() {
+            return "Testing";
+        }
 	
 	@GET
 	@Path("/{user_id}/notifications")

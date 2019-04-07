@@ -1,5 +1,5 @@
-/home/jarvis/disciplinas/prog_dist/servidor_de_eventos/domain/src/main/java/br/ufrn/imd/dim0614/servidor_de_eventos/database/ServerDatabase.java
-/home/jarvis/disciplinas/prog_dist/servidor_de_eventos/domain/src/main/java/br/ufrn/imd/dim0614/servidor_de_eventos/classes/User.java
-/home/jarvis/disciplinas/prog_dist/servidor_de_eventos/domain/src/main/java/br/ufrn/imd/dim0614/servidor_de_eventos/interfaces/Server.java
-/home/jarvis/disciplinas/prog_dist/servidor_de_eventos/domain/src/main/java/br/ufrn/imd/dim0614/servidor_de_eventos/classes/Event.java
-/home/jarvis/disciplinas/prog_dist/servidor_de_eventos/domain/src/main/java/br/ufrn/imd/dim0614/servidor_de_eventos/interfaces/Client.java
+/home/franklin/eclipse-workspace/RMI-Event-Server/servidor_de_eventos/domain/src/main/java/br/ufrn/imd/dim0614/servidor_de_eventos/classes/Event.java
+/home/franklin/eclipse-workspace/RMI-Event-Server/servidor_de_eventos/domain/src/main/java/br/ufrn/imd/dim0614/servidor_de_eventos/interfaces/Client.java
+/home/franklin/eclipse-workspace/RMI-Event-Server/servidor_de_eventos/domain/src/main/java/br/ufrn/imd/dim0614/servidor_de_eventos/database/ServerDatabase.java
+/home/franklin/eclipse-workspace/RMI-Event-Server/servidor_de_eventos/domain/src/main/java/br/ufrn/imd/dim0614/servidor_de_eventos/classes/User.java
+/home/franklin/eclipse-workspace/RMI-Event-Server/servidor_de_eventos/domain/src/main/java/br/ufrn/imd/dim0614/servidor_de_eventos/interfaces/Server.java
