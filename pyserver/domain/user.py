@@ -12,13 +12,14 @@ class User(object):
         self.password = password
         self.interest_topics = topics
         self.logged = False
-        self.notifications = {}
+        self.notifications = {True: [], False: []}
 
     def to_str(self):
         return "{" + self.name + "}," \
             "{" + self.username + "}," \
             "{" + self.password + "}," \
             "{" + str(self.interest_topics) + "}," \
+            "{" + str(self.logged) + "}," \
             "{" + str(self.notifications) + "}"
 
     def to_json(self):
@@ -29,4 +30,5 @@ class User(object):
                 "username": self.username,
                 "password": self.password,
                 "topics": self.interest_topics,
+                "logged": self.logged,
                 "notifications": self.notifications}
