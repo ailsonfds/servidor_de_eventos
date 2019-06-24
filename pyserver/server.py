@@ -6,12 +6,9 @@ from flask import (
 from pyserver.domain.event import Event
 from pyserver.domain.user import User
 
-from . import db
+from pyserver.db import db
 
 bp = Blueprint('server', __name__, url_prefix='/')
-bp.events = {}
-bp.users = {}
-
 
 @bp.errorhandler(404)
 def error():
@@ -24,23 +21,24 @@ def new_user():
     {
         "username": "",
         "name": "",
-        "password": "",
-        "logged": BOOL
+        "password": ""
     }
     '''
-    try:
-        content = request.get_json()
-        bp.users[content['username']] = User(**content).to_dict()
-        print(bp.users[content['username']])
-        return jsonify({"result": 200,
-                        "message": "User " + content['username'] +
-                        " created",
-                        "user": bp.users[content['username']]})
-    except KeyError:
-        return jsonify({"result": 404, "message": "User not registered"})
-    except Exception as e:
-        print(str(e))
-        return jsonify({"result": 500, "message": str(e)})
+    content = request.get_json()
+
+    if 'username' in content and 'name' in content and 'password' in content:
+        if db.username_already_exists(content['username']) == False:
+            db.insert_user(content)
+            
+            return jsonify({"result": 200,
+                            "message": "User " + content['username'] + " created successfully",
+                            "user": content})
+        else:
+            return jsonify({"result": 401,
+                            "message": "Username already exists"})
+    
+    return jsonify({"result": 400,
+                    "message": "The request cannot be fulfilled due to bad syntax"})
 
 
 @bp.route('/login', methods=['POST'])
@@ -51,71 +49,59 @@ def login_user():
         "password": "" 
     }
     '''
-    try:
-        content = request.get_json()
-        if bp.users[content['username']]['logged']:
-            return jsonify({"result": 401,
-                            "message": "User " + content['username'] +
-                            " already logged"})
-        if bp.users[content['username']]['password'] == content['password']:
-            bp.users[content['username']]['logged'] = True
-            return jsonify({"result": 200,
-                            "message": "User " + content['username'] +
-                            " accepted"})
+    content = request.get_json()
+
+    if 'username' in content and 'password' in content:
+        if db.credentials_exists(content) == False:
+            if db.user_already_logged(content['username']) == False:
+                db.login_user(content['username'])
+                
+                return jsonify({"result": 200,
+                                "message": "User " + content['username'] + " is now logged"})
+            else:
+                return jsonify({"result": 401,
+                                "message": "User already logged"})    
         else:
             return jsonify({"result": 401,
-                            "message": "User " + content['username'] +
-                            " not accepted"})
-    except KeyError:
-        return jsonify({"result": 404, "message": "User not registered"})
-    except Exception as e:
-        print(str(e))
-        return jsonify({"result": 500, "message": str(e)})
+                            "message": "Authentication failed"})
+    
+    return jsonify({"result": 400,
+                    "message": "The request cannot be fulfilled due to bad syntax"})
 
 
-@bp.route('/<string:username>/logout', methods=['POST'])
+@bp.route('/user/<string:username>/logout', methods=['POST'])
 def logout_user(username):
-    try:
-        if bp.users[username]['logged']:
-            bp.users[username]['logged'] = False
+    if db.username_already_exists(username) == True:
+        if db.user_already_logged(username) == True:
+            db.logout_user(username)
+            
             return jsonify({"result": 200,
-                            "message": "User " + username +
-                            " log out"})
+                            "message": "User " + username + " is now unlogged"})
         else:
             return jsonify({"result": 401,
-                            "message": "User " + username +
-                            " was not logged"})
-    except KeyError:
-        return jsonify({"result": 404, "message": "User not registered"})
-    except Exception as e:
-        print(str(e))
-        return jsonify({"result": 500, "message": str(e)})
+                            "message": "User already unlogged"})
+    else:
+        return jsonify({"result": 404,
+                        "message": "Username doesn't exists"})
+    
 
-
-@bp.route('/<string:username>', methods=["GET"])
+@bp.route('/user/<string:username>', methods=["GET"])
 def user_info(username):
-    try:
-        if bp.users[username]['logged']:
-            return jsonify({"result": 200,
-                            "message": "User " + username +
-                            " informations",
-                            "user": bp.users[username]})
-        else:
-            return jsonify({"result": 401,
-                            "message": "User " + username +
-                            " informations",
-                            "user": bp.users[username]})
-    except KeyError as e:
-        return jsonify({"result": 404, "message": "User " +
-                        str(e) + " not registered"})
-    except Exception as e:
-        print(str(e))
-        return jsonify({"result": 500, "message": str(e)})
+    if db.username_already_exists(username) == True:
+        return jsonify(db.get_user_info(username))
+    
+    return jsonify({"result": 404,
+                    "message": "Username doesn't exists"})
 
 
 @bp.route('/', methods=['GET'])
 def list_events():
-    return jsonify(list(bp.events.values()))
+    return jsonify({"events":db.select_events()})
+
+
+@bp.route('/topic/<string:topic>', methods=['GET'])
+def get_event_by_topic(topic):
+    return jsonify({"events":db.select_events_by_topic(topic)})
 
 
 @bp.route('/', methods=['POST'])
@@ -126,42 +112,51 @@ def publish_event():
         "description": "",
         "author": "",
         "created": "",
-        "end_date": ""
+        "end_date": "",
         "topics": []
     }
     '''
     content = request.get_json()
-    try:
-        bp.events[content['name']] = Event(**content).to_dict()
-        print(str(bp.events[content['name']]))
-        return jsonify({"result": 200,
-                        "message": "Event " + content['name'] + " create",
-                        "event": bp.events[content['name']]})
-    except Exception as e:
-        print(str(e))
-        return jsonify({"result": 500, "message": str(e)})
 
-
-@bp.route('/<string:username>/topics/', methods=['POST'])
-def add_interest_topics(username):
-    content = request.get_json()
-
-    try:
-        if bp.users[username]['logged']:
-            bp.users[username]['topics'].append(topic)
-            return jsonify({"result": 201,
-                            "message": "Topic " + topic + " added"})
+    if 'name' in content and 'description' in content and 'author' in content and 'created' in content and 'end_date' in content and 'topics' in content:
+        if db.username_already_exists(content['username']) == True:
+            db.insert_event(content)
+            return jsonify({"result": 200,
+                            "message": "Event " + content['name'] + " created successfully",
+                            "event": content})
         else:
-            return jsonify({"result": 401,
-                            "message": "User " + username +
-                            " unauthorized"})
-    except KeyError:
-        return jsonify({"result": 404, "message": "User not registered"})
-    except Exception as e:
-        return jsonify({"result": 500, "message": str(e)})
+            return jsonify({"result": 404,
+                            "message": "Username doesn't exists"})
+        
+    return jsonify({"result": 400,
+                    "message": "The request cannot be fulfilled due to bad syntax"})
 
 
-@bp.route('/<string:username>/topics/', mothod=['DELETE'])
+@bp.route('/user/<string:username>/topics', methods=['POST'])
+def add_interest_topics(username):
+    '''
+    {
+        topics: []
+    }
+    '''
+    content = request.get_json()
+    
+    if 'topics' in content:
+        if db.username_already_exists(username) == True:
+            content['username'] = username
+            db.insert_interest_topics(content)
+            return jsonify({"result": 200,
+                            "message": "New interest topics added successfully"})
+        else:
+            return jsonify({"result": 404,
+                            "message": "Username doesn't exists"})
+
+    return jsonify({"result": 400,
+                    "message": "The request cannot be fulfilled due to bad syntax"})
+
+
+
+@bp.route('/user/<string:username>/topics', methods=['DELETE'])
 def delete_interest_topics(username):
     '''
     {
@@ -169,19 +164,22 @@ def delete_interest_topics(username):
     }
     '''
     content = request.get_json()
+    
+    if 'topics' in content:
+        if db.username_already_exists(username) == True:
+            content['username'] = username
+            db.remove_interest_topics(content)
+            return jsonify({"result": 200,
+                            "message": "New interest topics added successfully"})
+        else:
+            return jsonify({"result": 404,
+                            "message": "Username doesn't exists"})
+
+    return jsonify({"result": 400,
+                    "message": "The request cannot be fulfilled due to bad syntax"})
 
 
-@bp.route('/topic/<string:topic>')
-def get_event_by_topic(topic):
-    topics = []
-    for ev in bp.events:
-        for t in bp.events.get(ev)['topics']:
-            if t == topic:
-                topics.append(bp.events.get(ev))
-    return jsonify(topics)
-
-
-@bp.route('/events/<int:id_event>/', mothod=['DELETE'])
+@bp.route('/events/<int:id_event>', methods=['DELETE'])
 def delete_event_topics(id_event):
     '''
     {
@@ -189,9 +187,23 @@ def delete_event_topics(id_event):
     }
     '''
     content = request.get_json()
+    
+    if 'topics' in content:
+        if db.event_exists_by_id(id_event) == True:
+            content['id_event'] = id_event
+            db.delete_topics(content)
+            
+            return jsonify({"result": 200,
+                            "message": "Topics deleted successfully"})
+        else:
+            return jsonify({"result": 404,
+                            "message": "Event doesn't exists"})
+
+    return jsonify({"result": 400,
+                    "message": "The request cannot be fulfilled due to bad syntax"})
 
 
-@bp.route('/events/<int:id_event>/', mothod=['POST'])
+@bp.route('/events/<int:id_event>', methods=['POST'])
 def insert_event_topics(id_event):
     '''
     {
@@ -199,6 +211,20 @@ def insert_event_topics(id_event):
     }
     '''
     content = request.get_json()
+    
+    if 'topics' in content:
+        if db.event_exists_by_id(id_event) == True:
+            content['id_event'] = id_event
+            db.insert_topics(content)
+            
+            return jsonify({"result": 200,
+                            "message": "Topics added successfully"})
+        else:
+            return jsonify({"result": 404,
+                            "message": "Event doesn't exists"})
+
+    return jsonify({"result": 400,
+                    "message": "The request cannot be fulfilled due to bad syntax"})
 
 
 def tests():
