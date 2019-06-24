@@ -6,6 +6,8 @@ from flask import (
 from pyserver.domain.event import Event
 from pyserver.domain.user import User
 
+from . import db
+
 bp = Blueprint('server', __name__, url_prefix='/')
 bp.events = {}
 bp.users = {}
@@ -16,62 +18,16 @@ def error():
     return make_response(jsonify({'error': 'Not Found'}), 404)
 
 
-@bp.route('/<string:username>/notifications', methods=['POST'])
-def user_has_notifications(username):
-    try:
-        if bp.users[username]['logged']:
-            return jsonify({"result": 200,
-                            "notifications":
-                            bp.users[username].notifications[True].length()})
-        else:
-            return jsonify({"result": 401,
-                            "message": "User " + username +
-                            " unauthorized"})
-    except KeyError:
-        return jsonify({"result": 404, "message": "User not registered"})
-    except Exception as e:
-        print(str(e))
-        return jsonify({"result": 500, "message": str(e)})
-
-
-@bp.route('/<string:username>/new_notifications', methods=['GET'])
-def unread_notifications(username):
-    try:
-        if bp.users[username]['logged']:
-            return jsonify({"result": 200,
-                            "notifications":
-                            bp.users[username].notifications[True]})
-        else:
-            return jsonify({"result": 401,
-                            "message": "User " + username +
-                            " unauthorized"})
-    except KeyError:
-        return jsonify({"result": 404, "message": "User not registered"})
-    except Exception as e:
-        print(str(e))
-        return jsonify({"result": 500, "message": str(e)})
-
-
-@bp.route('/<string:username>/old_notifications', methods=['GET'])
-def readed_notifications(username):
-    try:
-        if bp.users[username]['logged']:
-            return jsonify({"result": 200,
-                            "notifications":
-                            bp.users[username].notifications[False]})
-        else:
-            return jsonify({"result": 401,
-                            "message": "User " + username +
-                            " unauthorized"})
-    except KeyError:
-        return jsonify({"result": 404, "message": "User not registered"})
-    except Exception as e:
-        print(str(e))
-        return jsonify({"result": 500, "message": str(e)})
-
-
 @bp.route('/signin', methods=['POST'])
 def new_user():
+    '''
+    {
+        "username": "",
+        "name": "",
+        "password": "",
+        "logged": BOOL
+    }
+    '''
     try:
         content = request.get_json()
         bp.users[content['username']] = User(**content).to_dict()
@@ -89,6 +45,12 @@ def new_user():
 
 @bp.route('/login', methods=['POST'])
 def login_user():
+    '''
+    {
+        "username": "", 
+        "password": "" 
+    }
+    '''
     try:
         content = request.get_json()
         if bp.users[content['username']]['logged']:
@@ -158,6 +120,16 @@ def list_events():
 
 @bp.route('/', methods=['POST'])
 def publish_event():
+    '''
+    {
+        "name": "",
+        "description": "",
+        "author": "",
+        "created": "",
+        "end_date": ""
+        "topics": []
+    }
+    '''
     content = request.get_json()
     try:
         bp.events[content['name']] = Event(**content).to_dict()
@@ -170,8 +142,10 @@ def publish_event():
         return jsonify({"result": 500, "message": str(e)})
 
 
-@bp.route('/<string:username>/topics/<string:topic>', methods=['POST'])
-def add_interest_topic(username, topic):
+@bp.route('/<string:username>/topics/', methods=['POST'])
+def add_interest_topics(username):
+    content = request.get_json()
+
     try:
         if bp.users[username]['logged']:
             bp.users[username]['topics'].append(topic)
@@ -187,6 +161,16 @@ def add_interest_topic(username, topic):
         return jsonify({"result": 500, "message": str(e)})
 
 
+@bp.route('/<string:username>/topics/', mothod=['DELETE'])
+def delete_interest_topics(username):
+    '''
+    {
+        topics: []
+    }
+    '''
+    content = request.get_json()
+
+
 @bp.route('/topic/<string:topic>')
 def get_event_by_topic(topic):
     topics = []
@@ -195,6 +179,26 @@ def get_event_by_topic(topic):
             if t == topic:
                 topics.append(bp.events.get(ev))
     return jsonify(topics)
+
+
+@bp.route('/events/<int:id_event>/', mothod=['DELETE'])
+def delete_event_topics(id_event):
+    '''
+    {
+        topics: []
+    }
+    '''
+    content = request.get_json()
+
+
+@bp.route('/events/<int:id_event>/', mothod=['POST'])
+def insert_event_topics(id_event):
+    '''
+    {
+        topics: []
+    }
+    '''
+    content = request.get_json()
 
 
 def tests():
