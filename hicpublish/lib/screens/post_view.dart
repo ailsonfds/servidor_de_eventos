@@ -86,91 +86,94 @@ class _PostViewState extends State<PostView> {
         ),
       ],
     ),
-    body: Container(
+    body:Container(
       color: Colors.black,
-      alignment: Alignment.topLeft,
       child: RefreshIndicator(
         onRefresh: _refreshPost,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+        child: ListView (
           children: <Widget>[
-            _FrameField(
-              Row(
-                children: <Widget>[
-                  _FrameField (
-                    Text(
-                      'Tópicos:',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    )
-                  ),
-                  _FrameField(
-                    Card(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: topicsList(context, post.topics),
+            Column (
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                _FrameField(
+                  Row(
+                    children: <Widget>[
+                      _FrameField (
+                        Text(
+                          'Tópicos:',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        )
                       ),
-                    ),
+                      _FrameField(
+                        Card(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: topicsList(context, post.topics),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            _FrameField(
-              Row (
-                children: <Widget>[
-                  _FrameField(
-                    Text(
-                      'Dia do evento:',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  _FrameField(
-                    Text(
-                      DateFormat('dd/MM/yyyy').format(post.end),
-                      textAlign: TextAlign.left,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            _FrameField(
-              Row(
-                children: <Widget>[
-                  _FrameField (
-                    Text(
-                      'Autor:',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    )
-                  ),
-                  _FrameField(
-                    Text(
-                      post.author,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            _FrameField(
-              Row(
-                children: <Widget>[
-                  _FrameField (
-                    Text(
-                      'Descrição:',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            _FrameField (
-              _FrameTextArea (
-                Text(
-                  post.description,
-                  textAlign: TextAlign.left,
                 ),
-              ),
+                _FrameField(
+                  Row (
+                    children: <Widget>[
+                      _FrameField(
+                        Text(
+                          'Dia do evento:',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      _FrameField(
+                        Text(
+                          DateFormat('dd/MM/yyyy').format(post.end),
+                          textAlign: TextAlign.left,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                _FrameField(
+                  Row(
+                    children: <Widget>[
+                      _FrameField (
+                        Text(
+                          'Autor:',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        )
+                      ),
+                      _FrameField(
+                        Text(
+                          post.author,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                _FrameField(
+                  Row(
+                    children: <Widget>[
+                      _FrameField (
+                        Text(
+                          'Descrição:',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                _FrameField (
+                  _FrameTextArea (
+                    Text(
+                      post.description,
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

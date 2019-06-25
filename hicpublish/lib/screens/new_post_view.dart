@@ -1,8 +1,11 @@
+import 'package:hicpublish/controllers/auth_controller.dart';
+import 'package:hicpublish/models/user.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:hicpublish/controllers/post_controller.dart';
 import 'package:hicpublish/models/post.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NewPostView extends StatefulWidget {
   final Post post;
@@ -34,21 +37,62 @@ class _NewPostViewState extends State<NewPostView> {
     setState(() {
       if (_formKey.currentState.validate()) {
         _formKey.currentState.save();
-        Map<String, dynamic> jsonMap = <String,dynamic>{
-          "created": DateFormat("yyyy-MM-dd").format(DateTime.now()),
-          "topics": topics,
-          "name": name,
-          "description": description,
-          "author": author,
-          "end": end,
-        };
-        post = Post.fromJson(jsonMap);
-        insertPosts(post);
+        String username;
+        SharedPreferences.getInstance().then((val) => username = val.getString("username"));
+        SharedPreferences.getInstance().whenComplete(() {
+          User user;
+          getUser(username).then((val) {
+            user = val;
+          }).whenComplete(() {
+            Map<String, dynamic> jsonMap = <String,dynamic>{
+              "created": DateFormat("yyyy-MM-dd").format(DateTime.now()),
+              "topics": topics,
+              "name": name,
+              "description": description,
+              "author": user.name,
+              "end": end,
+              "username": username,
+            };
+            print(jsonMap);
+            post = Post.fromJson(jsonMap);
+            insertPosts(post);
+          });
+        });
       }
     });
     if (_formKey.currentState.validate()) {
       Navigator.pop(context);
     }
+  }
+
+  final TextEditingController _controller = new TextEditingController();
+  Future _chooseDate(BuildContext context, String initialDateString) async {
+    var now = new DateTime.now();
+    var initialDate = convertToDate(initialDateString) ?? now;
+    initialDate = (initialDate.isAfter(now) ? initialDate : now);
+
+    var result = await showDatePicker(
+        context: context,
+        initialDate: initialDate,
+        firstDate: new DateTime.now().subtract(new Duration(days: 1)),
+        lastDate: new DateTime(DateTime.now().year+50));
+
+    if (result == null) return;
+
+    setState(() {
+      _controller.text = new DateFormat('dd/MM/yyyy').format(result);
+      end = DateFormat("yyyy-MM-dd").format(result);
+    });
+  }
+
+  DateTime convertToDate(String input) {
+    try 
+    {
+      var d = new DateFormat('dd/MM/yyyy').parseStrict(input);
+      return d;
+    } catch (e) {
+      return null;
+    }    
   }
 
   @override
@@ -62,9 +106,10 @@ class _NewPostViewState extends State<NewPostView> {
       child: Container(
         padding: EdgeInsets.all(30),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Container(
+              padding: EdgeInsets.all(20),
               child: TextFormField(
                 decoration: new InputDecoration(
                   labelText: "Nome",
@@ -90,6 +135,7 @@ class _NewPostViewState extends State<NewPostView> {
               ),
             ),
             Container (
+              padding: EdgeInsets.all(20),
               child: TextFormField(
                 decoration: new InputDecoration(
                   labelText: "Descrição",
@@ -108,6 +154,7 @@ class _NewPostViewState extends State<NewPostView> {
               ),
             ),
             Container (
+              padding: EdgeInsets.all(20),
               child: TextFormField(
                 decoration: new InputDecoration(
                   labelText: "Tópicos de Interesse Relacionado",
@@ -138,60 +185,30 @@ class _NewPostViewState extends State<NewPostView> {
               ),
             ),
             Container (
-              child: TextFormField(
-                decoration: new InputDecoration(
-                  labelText: "Autor",
-                  fillColor: Colors.white,
-                  border: new OutlineInputBorder(
-                    borderRadius: new BorderRadius.circular(25.0),
-                    borderSide: new BorderSide(),
+              padding: EdgeInsets.all(20),
+              child: Row(children: <Widget>[
+                new Expanded(
+                  child: new TextFormField(
+                  decoration: new InputDecoration(
+                    labelText: 'Dia do Evento',
+                    fillColor: Colors.white,
+                    border: new OutlineInputBorder(
+                      borderRadius: new BorderRadius.circular(25.0),
+                      borderSide: new BorderSide(),
+                    ),
                   ),
-                ),
-                initialValue: post.author,
-                validator: (val) {
-                  if (val.length==0) {
-                    return "O author não pode ser vazio";
-                  } else {
-                    return null;
-                  }
-                },
-                keyboardType: TextInputType.text,
-                style: new TextStyle(
-                  fontFamily: "Poppins",
-                ),
-                onSaved: (val) => setState(() => author = val),
-              ),
-            ),
-            Container (
-              child: TextFormField(
-                decoration: new InputDecoration(
-                  labelText: "Dia do Evento",
-                  fillColor: Colors.white,
-                  border: new OutlineInputBorder(
-                    borderRadius: new BorderRadius.circular(25.0),
-                    borderSide: new BorderSide(),
-                  ),
-                ),
-                initialValue: DateFormat('dd/MM/yyyy').format(post.end),
-                validator: (val) {
-                  if (val.isEmpty) {
-                    return "Inisira o dia do evento";
-                  } else {
-                    try {
-                      if (DateTime.now().isAfter(DateFormat('dd/MM/yyyy').parse(val))) {
-                        return "Esse dia já passou";
-                      }
-                    } catch (e) {
-                      return "Formato inválido. Tente dia/mês/ano";
-                    }
-                  }
-                },
-                keyboardType: TextInputType.text,
-                style: new TextStyle(
-                  fontFamily: "Poppins",
-                ),
-                onSaved: (val) => setState(() => end = DateFormat("yyyy-MM-dd").format(DateFormat('dd/MM/yyyy').parse(val))),
-              ),
+                  controller: _controller,
+                  keyboardType: TextInputType.datetime,
+                  onSaved: (val) => setState(() => end = DateFormat("yyyy-MM-dd").format(DateFormat('dd/MM/yyyy').parse(val))),
+                )),
+                new IconButton(
+                  icon: new Icon(Icons.calendar_today),
+                  tooltip: 'Escolha uma data',
+                  onPressed: (() {
+                    _chooseDate(context, _controller.text);
+                  }),
+                )
+              ]),
             ),
             RaisedButton (
               onPressed: sendForm,

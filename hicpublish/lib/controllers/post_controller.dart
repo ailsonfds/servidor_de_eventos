@@ -1,3 +1,5 @@
+// import 'dart:collection';
+
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'dart:convert';
@@ -31,7 +33,7 @@ Future<Stream<Post>> getPostsFromTopic(String topic) async {
   return streamedRest.stream
      .transform(utf8.decoder)
      .transform(json.decoder)
-     .expand((data) => (data as List))
+    //  .expand((data) => (data as List))
      .map((data) => Post.fromJson(data));
 }
 

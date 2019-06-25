@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hicpublish/auth/login_view.dart';
+import 'package:hicpublish/auth/logout.dart';
 import 'package:hicpublish/controllers/post_controller.dart';
 import 'package:hicpublish/models/post.dart';
 import 'package:hicpublish/screens/new_post_view.dart';
 import 'package:hicpublish/widgets/post_tile.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -15,6 +18,12 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    Future<SharedPreferences> prefs = SharedPreferences.getInstance();
+    prefs.then((val) {
+      if (val.getString('username') == null || val.getString('username') == ''){
+        Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+      }
+    });
     super.initState();
     listenForPosts();
   }
@@ -46,6 +55,9 @@ class _HomeState extends State<Home> {
     appBar: AppBar(
       centerTitle: true,
       title: Text('Posts'),
+      actions: <Widget>[
+        logoutButton(context),
+      ],
     ),
     body: Container (
       color: Colors.white,
