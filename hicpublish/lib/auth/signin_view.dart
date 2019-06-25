@@ -16,23 +16,33 @@ class SigninScreenState extends State<SigninScreen> {
   String password;
   User _user;
   final _formKey = GlobalKey<FormState>();
+  String usernameValidate;
 
   @override
   void initState() {
     super.initState();
   }
 
-  signin() {
+  signin() async {
+    bool response = await checkUsername(username);
     setState(() {
       if (_formKey.currentState.validate()) {
-        _formKey.currentState.save();
-        Map<String, dynamic> jsonMap = <String,dynamic>{
-          "username": username,
-          "name": name,
-          "password": password,
-        };
-        _user = User.fromJson(jsonMap);
-        createUser(_user).then((val) => val?Navigator.pop(context):null);
+        print(response.toString());
+        if (!response) {
+          usernameValidate = "Nome de usuário já existe!";
+        } else {
+          usernameValidate = null;
+        }
+        if (usernameValidate == null) {
+          _formKey.currentState.save();
+          Map<String, dynamic> jsonMap = <String,dynamic>{
+            "username": username,
+            "name": name,
+            "password": password,
+          };
+          _user = User.fromJson(jsonMap);
+          createUser(_user).then((val) => val?Navigator.pop(context):null);
+        }
       }
     });
   }
@@ -93,16 +103,7 @@ class SigninScreenState extends State<SigninScreen> {
                     if (val.length == 0) {
                       return 'Digite um nome de usuário.';
                     }
-                    String result;
-                    checkUsername(val).then((userExists) {
-                      if (!userExists) {
-                        result = "Nome de usuário já existe!";
-                      } else {
-                        result = null;
-                      }
-                      return result;
-                    });
-                    // return result;
+                    return usernameValidate;
                   },
                   keyboardType: TextInputType.text,
                   style: new TextStyle(

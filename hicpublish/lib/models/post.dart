@@ -19,16 +19,17 @@ DateTime formatDate(String date){
 
 class Post {
   //  id_event | name | description | author | created | end_date 
-  final String id;
+  final int id;
   final String name;
   final String description;
   final List<String> topics;
   final String author;
   final DateTime created;
   final DateTime end;
+  String authorUsername;
 
   Post.fromJson(Map<String, dynamic> jsonMap) :
-    id = jsonMap['id'],
+    id = jsonMap['id_event'],
     name = jsonMap["name"],
     description = jsonMap["description"],
     topics = jsonMap["topics"].cast<String>(),
@@ -41,7 +42,7 @@ class Post {
     'description': description,
     'topics': topics,
     'author': author,
-    'end': DateFormat('yyyy-MM-dd').format(end),
+    'end_date': DateFormat('yyyy-MM-dd').format(end),
     'created': DateFormat('yyyy-MM-dd').format(created),
   };
 

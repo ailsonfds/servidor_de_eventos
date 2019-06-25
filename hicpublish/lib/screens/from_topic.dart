@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hicpublish/auth/logout.dart';
 import 'package:hicpublish/controllers/post_controller.dart';
 import 'package:hicpublish/models/post.dart';
 import 'package:hicpublish/screens/new_post_view.dart';
@@ -51,7 +52,16 @@ class _TopicState extends State<Topic> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       centerTitle: true,
-      title: Text(topic),
+      title: Text(
+        topic,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+      actions: <Widget>[
+        logoutButton(context),
+      ],
     ),
     body: Container (
       color: Colors.white,

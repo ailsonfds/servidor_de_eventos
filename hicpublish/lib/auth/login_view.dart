@@ -22,16 +22,30 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   login() {
-    setState(() {
-      if (_formKey.currentState.validate()) {
-        _formKey.currentState.save();
-        Map<String, dynamic> jsonMap = <String,dynamic>{
-          "username": username,
-          "password": password,
-        };
-        loginUser(jsonMap).then((onValue) => onValue?Navigator.pop(context):null);
-      }
-    });
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+      Map<String, dynamic> jsonMap = <String,dynamic>{
+        "username": username,
+        "password": password,
+      };
+      loginUser(jsonMap).then((onValue) => onValue?Navigator.pop(context):showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return AlertDialog(
+            title: Text("Erro"),
+            content: Text("Usuário não existe ou senha incorreta!"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Close"),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        }
+      ));
+    }
   }
 
   @override

@@ -54,7 +54,13 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       centerTitle: true,
-      title: Text('Posts'),
+      title: Text(
+        'Posts',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
       actions: <Widget>[
         logoutButton(context),
       ],

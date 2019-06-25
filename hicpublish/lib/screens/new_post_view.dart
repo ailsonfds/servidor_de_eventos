@@ -40,24 +40,24 @@ class _NewPostViewState extends State<NewPostView> {
         String username;
         SharedPreferences.getInstance().then((val) => username = val.getString("username"));
         SharedPreferences.getInstance().whenComplete(() {
-          User user;
-          getUser(username).then((val) {
-            user = val;
-          }).whenComplete(() {
-            Map<String, dynamic> jsonMap = <String,dynamic>{
-              "created": DateFormat("yyyy-MM-dd").format(DateTime.now()),
-              "topics": topics,
-              "name": name,
-              "description": description,
-              "author": user.name,
-              "end": end,
-              "username": username,
-            };
-            print(jsonMap);
-            post = Post.fromJson(jsonMap);
-            insertPosts(post);
-          });
+          // User user;
+          // getUser(username).then((val) {
+            // user = val;
+          // }).whenComplete(() {
+          Map<String, dynamic> jsonMap = <String,dynamic>{
+            "created": DateFormat("yyyy-MM-dd").format(DateTime.now()),
+            "topics": topics,
+            "name": name,
+            "description": description,
+            // "author": user.name,
+            "end": end,
+            "author": username,
+          };
+          print(jsonMap);
+          post = Post.fromJson(jsonMap);
+          insertPosts(post);
         });
+        // });
       }
     });
     if (_formKey.currentState.validate()) {

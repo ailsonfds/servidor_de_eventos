@@ -33,7 +33,7 @@ Future<Stream<Post>> getPostsFromTopic(String topic) async {
   return streamedRest.stream
      .transform(utf8.decoder)
      .transform(json.decoder)
-    //  .expand((data) => (data as List))
+     .expand((data) => (data as List))
      .map((data) => Post.fromJson(data));
 }
 
@@ -52,31 +52,29 @@ Future<Response> insertPosts(Post post) async {
       body: body,
   );
 
+  print(streamRest.body);
+
   return streamRest;
 
 }
 
-Future<Response> deletePosts(Post post) async {
-  final String url = '$endpointServer/';
+Future<Response> deletePosts(int id) async {
+  final String url = '$endpointServer/events/$id';
 
   final client = new http.Client();
-  Map<String,String> head = {
-    'Content-Type': 'application/json',
-  };
-  String body = json.encode(post);
 
-  final streamRest = await client.post(
+  final streamRest = await client.delete(
       Uri.parse(url),
-      headers: head,
-      body: body,
   );
+  print(url);
+  print(streamRest.body);
 
   return streamRest;
 
 }
 
-Future<Post> getPost(String name) async {
-  final String url = '$endpointServer/$name';
+Future<Post> getPost(String id) async {
+  final String url = '$endpointServer/$id';
 
   final client = new http.Client();
   final streamedRest = await client.get(

@@ -77,6 +77,7 @@ class _PostViewState extends State<PostView> {
             ),
             color: Colors.white,
             onPressed: () {
+              deletePosts(post.id);
               Navigator.pop(context);
             },
             child: Icon(

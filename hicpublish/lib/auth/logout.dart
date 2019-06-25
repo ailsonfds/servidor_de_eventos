@@ -1,3 +1,5 @@
+// import 'package:hicpublish/app.dart';
+import 'package:hicpublish/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:hicpublish/controllers/auth_controller.dart';
@@ -16,7 +18,8 @@ Widget logoutButton(dynamic context){
         SharedPreferences.getInstance().then((prefs){
           logoutUser(prefs.getString('username')).then((val){
             if (val) {
-              Navigator.pop(context);
+              // Navigator.pop(context);
+              RestartWidget.restartApp(context);
             }
           });
         });
