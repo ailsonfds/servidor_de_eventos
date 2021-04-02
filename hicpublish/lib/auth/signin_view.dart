@@ -7,7 +7,6 @@ class SigninScreen extends StatefulWidget {
   State<StatefulWidget> createState() {
     return new SigninScreenState();
   }
-
 }
 
 class SigninScreenState extends State<SigninScreen> {
@@ -35,13 +34,13 @@ class SigninScreenState extends State<SigninScreen> {
         }
         if (usernameValidate == null) {
           _formKey.currentState.save();
-          Map<String, dynamic> jsonMap = <String,dynamic>{
+          Map<String, dynamic> jsonMap = <String, dynamic>{
             "username": username,
             "name": name,
             "password": password,
           };
           _user = User.fromJson(jsonMap);
-          createUser(_user).then((val) => val?Navigator.pop(context):null);
+          createUser(_user).then((val) => val ? Navigator.pop(context) : null);
         }
       }
     });
@@ -50,11 +49,11 @@ class SigninScreenState extends State<SigninScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:  AppBar(
+      appBar: AppBar(
         centerTitle: true,
         title: Text('Cadastro'),
       ),
-      body: Form (
+      body: Form(
         key: _formKey,
         child: Container(
           padding: EdgeInsets.all(30),
@@ -74,7 +73,7 @@ class SigninScreenState extends State<SigninScreen> {
                   ),
                   initialValue: name,
                   validator: (val) {
-                    if (val.length==0) {
+                    if (val.length == 0) {
                       return "Digite seu nome.";
                     } else {
                       return null;
@@ -87,7 +86,7 @@ class SigninScreenState extends State<SigninScreen> {
                   onSaved: (val) => setState(() => name = val),
                 ),
               ),
-              Container (
+              Container(
                 padding: EdgeInsets.all(30),
                 child: TextFormField(
                   decoration: new InputDecoration(
@@ -112,7 +111,7 @@ class SigninScreenState extends State<SigninScreen> {
                   onSaved: (val) => setState(() => username = val),
                 ),
               ),
-              Container (
+              Container(
                 padding: EdgeInsets.all(30),
                 child: TextFormField(
                   decoration: new InputDecoration(
@@ -125,7 +124,7 @@ class SigninScreenState extends State<SigninScreen> {
                   ),
                   initialValue: password,
                   validator: (val) {
-                    if (val.length==0) {
+                    if (val.length == 0) {
                       return "Digite uma senha";
                     } else {
                       return null;
@@ -139,14 +138,13 @@ class SigninScreenState extends State<SigninScreen> {
                   onSaved: (val) => setState(() => password = val),
                 ),
               ),
-              RaisedButton (
+              RaisedButton(
                 onPressed: signin,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0)
-                ),
+                    borderRadius: BorderRadius.circular(30.0)),
                 child: Text(
-                    'Signin',
-                    style: TextStyle(color: Colors.black),
+                  'Signin',
+                  style: TextStyle(color: Colors.black),
                 ),
               ),
             ],

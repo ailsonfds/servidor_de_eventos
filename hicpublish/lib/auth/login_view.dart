@@ -9,7 +9,6 @@ class LoginScreen extends StatefulWidget {
   State<StatefulWidget> createState() {
     return new LoginScreenState();
   }
-
 }
 
 class LoginScreenState extends State<LoginScreen> {
@@ -24,45 +23,46 @@ class LoginScreenState extends State<LoginScreen> {
   login() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      Map<String, dynamic> jsonMap = <String,dynamic>{
+      Map<String, dynamic> jsonMap = <String, dynamic>{
         "username": username,
         "password": password,
       };
-      loginUser(jsonMap).then((onValue) => onValue?Navigator.pop(context):showDialog(
-        context: context,
-        builder: (BuildContext context){
-          return AlertDialog(
-            title: Text("Erro"),
-            content: Text("Usuário não existe ou senha incorreta!"),
-            actions: <Widget>[
-              FlatButton(
-                child: Text("Close"),
-                onPressed: (){
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        }
-      ));
+      loginUser(jsonMap).then((onValue) => onValue
+          ? Navigator.pop(context)
+          : showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("Erro"),
+                  content: Text("Usuário não existe ou senha incorreta!"),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("Close"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              }));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:  AppBar(
+      appBar: AppBar(
         centerTitle: true,
         title: Text('Login'),
       ),
-      body: Form (
+      body: Form(
         key: _formKey,
         child: Container(
           padding: EdgeInsets.all(30),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Container (
+              Container(
                 padding: EdgeInsets.all(30),
                 child: TextFormField(
                   decoration: new InputDecoration(
@@ -88,7 +88,7 @@ class LoginScreenState extends State<LoginScreen> {
                   onSaved: (val) => setState(() => username = val),
                 ),
               ),
-              Container (
+              Container(
                 padding: EdgeInsets.all(30),
                 child: TextFormField(
                   decoration: new InputDecoration(
@@ -101,7 +101,7 @@ class LoginScreenState extends State<LoginScreen> {
                   ),
                   initialValue: password,
                   validator: (val) {
-                    if (val.length==0) {
+                    if (val.length == 0) {
                       return "Digite uma senha";
                     } else {
                       return null;
@@ -115,28 +115,27 @@ class LoginScreenState extends State<LoginScreen> {
                   onSaved: (val) => setState(() => password = val),
                 ),
               ),
-              RaisedButton (
+              RaisedButton(
                 onPressed: login,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0)
-                ),
+                    borderRadius: BorderRadius.circular(30.0)),
                 color: Colors.blue,
                 child: Text(
-                    'Login',
-                    style: TextStyle(color: Colors.white),
+                  'Login',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
-              RaisedButton (
+              RaisedButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => SigninScreen()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => SigninScreen()));
                 },
                 color: Colors.red,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0)
-                ),
+                    borderRadius: BorderRadius.circular(30.0)),
                 child: Text(
-                    'Signin',
-                    style: TextStyle(color: Colors.black),
+                  'Signin',
+                  style: TextStyle(color: Colors.black),
                 ),
               ),
             ],

@@ -9,7 +9,9 @@ Future<bool> createUser(dynamic jsonMap) async {
   final String url = '$endpointServer/signin';
 
   final client = new http.Client();
-  final streamedRest = await client.post(url, headers: {"Content-Type":"application/json"}, body: json.encode(jsonMap));
+  final streamedRest = await client.post(url,
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(jsonMap));
   print('Create user\n');
   print(streamedRest);
   final responseBody = json.decode(streamedRest.body);
@@ -22,7 +24,9 @@ Future<bool> loginUser(dynamic jsonMap) async {
   final String url = '$endpointServer/login';
 
   final client = new http.Client();
-  final streamedRest = await client.post(url, headers: {"Content-Type":"application/json"}, body: json.encode(jsonMap));
+  final streamedRest = await client.post(url,
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(jsonMap));
   print('Login user\n');
   print(streamedRest.body);
   final responseBody = json.decode(streamedRest.body);
@@ -41,7 +45,7 @@ Future<bool> logoutUser(String username) async {
 
   final client = new http.Client();
   final streamedRest = await client.post(url);
-  if (streamedRest.statusCode!=200) {
+  if (streamedRest.statusCode != 200) {
     return false;
   }
   final responseBody = json.decode(streamedRest.body);
@@ -60,13 +64,12 @@ Future<User> getUser(String username) async {
 
   final client = new http.Client();
   final streamedRest = await client.get(url);
-  if (streamedRest.statusCode!=200) {
+  if (streamedRest.statusCode != 200) {
     return null;
   }
   final responseBody = json.decode(streamedRest.body);
   print(responseBody);
   return User.fromJson(responseBody);
-
 }
 
 Future<bool> checkUsername(String username) async {
@@ -76,7 +79,6 @@ Future<bool> checkUsername(String username) async {
   final streamedRest = await client.get(url);
   final responseBody = json.decode(streamedRest.body);
   return responseBody['result'] == 404;
-
 }
 
 Future<bool> checkUserLogged(String username) async {

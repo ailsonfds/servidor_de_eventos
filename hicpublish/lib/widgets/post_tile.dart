@@ -9,34 +9,31 @@ class PostTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-    children: <Widget>[
-      ListTile(
-        title: Text(
-          _post.name,
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: topicsList(context, _post.topics)
-        ),
-        trailing: Icon(Icons.keyboard_arrow_right),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => PostView(_post))
-          );
-        },
-        selected: true,
-      ),
-      Divider()
-    ],
-  );
+        children: <Widget>[
+          ListTile(
+            title: Text(
+              _post.name,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: topicsList(context, _post.topics)),
+            trailing: Icon(Icons.keyboard_arrow_right),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => PostView(_post)));
+            },
+            selected: true,
+          ),
+          Divider()
+        ],
+      );
 }
 
-List<Widget> topicsList(context, List list){
+List<Widget> topicsList(context, List list) {
   final children = <Widget>[];
   for (String c in list) {
-    double l = c.length*9.0;
+    double l = c.length * 9.0;
     double h = 25.0;
     children.add(
       SizedBox(
